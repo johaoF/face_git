@@ -49,3 +49,22 @@ def webhook():
                     pass
 
     return "ok", 200
+
+def send_message(recipient_id, message_text):
+    params = {
+         "access_token": os.environ["FB_PAGE_ACCESS_TOKEN"]
+    }
+    headers = {
+        'Content-Type': 'application/json'
+    }
+    data = {
+        'recipient': {
+            'id': recipient_id
+        },
+        'message': {
+            'text': message_text
+        }
+    }
+    response = requests.post('https://graph.facebook.com/v12.0/me/messages', params=params, headers=headers, data=json.dumps(data))
+    if response.status_code != 200:
+        print('Error al enviar el mensaje: ' + response.text)
