@@ -1,4 +1,4 @@
---upgrade pip
+pip=23.0.1
 Flask
 Gunicorn
 requests
