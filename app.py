@@ -88,7 +88,3 @@ def log(msg, *args, **kwargs):  # simple wrapper for logging to stdout on heroku
     except UnicodeEncodeError:
         pass  # squash logging errors in case of non-ascii text
     sys.stdout.flush()
-
-
-if __name__ == '__main__':
-    app.run(debug=True)
