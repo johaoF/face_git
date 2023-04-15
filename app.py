@@ -50,9 +50,9 @@ def webhook():
 
                     response = session_client.detect_intent(session=session_path, query_input=query_input)
 
-                    fulfillment_messages = response.query_result.fulfillment_messages
+                    fulfillment_messages = response.query_result.fulfillment_text
                     
-                send_message(sender_id, fulfillment_menssages)
+                send_message(sender_id, fulfillment_messages)
 
                 if messaging_event.get("delivery"):  # delivery confirmation
                     pass
