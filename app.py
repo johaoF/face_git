@@ -51,17 +51,8 @@ def webhook():
                     response = session_client.detect_intent(session=session_path, query_input=query_input)
 
                     fulfillment_messages = response.query_result.fulfillment_messages
-
-                    text_response = ""
-                    seen_paragraphs = set()
                     
-                    for message in fulfillment_messages:
-                        if message.text.text:
-                            for paragraph in message.text.text:
-                                 if paragraph not in seen_paragraphs:
-                                 text_response = paragraph + "\n"
-                                 seen_paragraphs.add(paragraph)
-                send_message(sender_id, text_response)
+                send_message(sender_id, fulfillment_menssages)
 
                 if messaging_event.get("delivery"):  # delivery confirmation
                     pass
