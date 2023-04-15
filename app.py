@@ -59,7 +59,7 @@ def webhook():
                         if message.text.text:
                             for paragraph in message.text.text:
                                  if paragraph not in seen_paragraphs:
-                                 text_response += paragraph + "\n"
+                                 text_response = paragraph + "\n"
                                  seen_paragraphs.add(paragraph)
                 send_message(sender_id, text_response)
 
