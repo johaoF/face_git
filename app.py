@@ -52,6 +52,15 @@ def webhook():
 
                     fulfillment_messages = response.query_result.fulfillment_text
                     
+                    text_response = []
+                    seen_paragraphs = set()
+                    for message in fulfillment_messages:
+                        for paragraph in message.text.text:
+                            if paragraph not in seen_paragraphs:
+                                text_response.append(paragraph)
+                            seen_paragraphs.add(paragraph)
+                    response_text = "\n".join(text_response)
+                    
                 send_message(sender_id, fulfillment_messages)
 
                 if messaging_event.get("delivery"):  # delivery confirmation
