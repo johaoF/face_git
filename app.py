@@ -2,9 +2,17 @@ import os
 import sys
 import json
 from datetime import datetime
+from google.cloud import dialogflow_v2 as dialogflow
 
 import requests
 from flask import Flask, request
+
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/etc/secrets/clave.json"
+project_id = 'barrestaurante-eltri-ngul-xpxa'
+session_id = 'me'
+
+session_client = dialogflow.SessionsClient()
+session_path = session_client.session_path(project_id, session_id)
 
 app = Flask(__name__)
 
@@ -36,8 +44,24 @@ def webhook():
                     sender_id = messaging_event["sender"]["id"]        # the facebook ID of the person sending you the message
                     recipient_id = messaging_event["recipient"]["id"]  # the recipient's ID, which should be your page's facebook ID
                     message_text = messaging_event["message"]["text"]  # the message's text
+                    tx=message_text
+                    text_input = dialogflow.TextInput(text=tx, language_code="es-ES")
+                    query_input = dialogflow.QueryInput(text=text_input)
 
-                    send_message(sender_id, "Hola, un gusto atenderte")
+                    response = session_client.detect_intent(session=session_path, query_input=query_input)
+
+                    fulfillment_messages = response.query_result.fulfillment_messages
+
+                    text_response = ""
+                    seen_paragraphs = set()
+                    
+                    for message in fulfillment_messages:
+                        if message.text.text:
+                            for paragraph in message.text.text:
+                                 if paragraph not in seen_paragraphs:
+                                 text_response += paragraph + "\n"
+                                 seen_paragraphs.add(paragraph)
+                send_message(sender_id, text_response)
 
                 if messaging_event.get("delivery"):  # delivery confirmation
                     pass
