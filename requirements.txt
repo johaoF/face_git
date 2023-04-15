@@ -2,3 +2,4 @@ pip==23.0.1
 Flask
 Gunicorn
 requests
+google-cloud-dialogflow
