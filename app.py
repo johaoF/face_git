@@ -38,7 +38,7 @@ def webhook():
 
         for entry in data["entry"]:
             for messaging_event in entry["messaging"]:
-
+                sender_id = None
                 if messaging_event.get("message"):  # someone sent us a message
 
                     sender_id = messaging_event["sender"]["id"]        # the facebook ID of the person sending you the message
@@ -60,8 +60,8 @@ def webhook():
                                 text_response.append(paragraph)
                             seen_paragraphs.add(paragraph)
                     response_text = "\n".join(text_response)
-                    
-                send_message(sender_id, response_text)
+                if sender_id is not None:
+                    send_message(sender_id, response_text)
 
                 if messaging_event.get("delivery"):  # delivery confirmation
                     pass
