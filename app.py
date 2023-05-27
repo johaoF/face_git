@@ -7,6 +7,7 @@ from pymongo import MongoClient
 import requests
 from flask import Flask, request
 import spacy
+from spacy.matcher import Matcher
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/etc/secrets/clave.json"
 project_id = 'barrestaurante-eltri-ngul-xpxa'
