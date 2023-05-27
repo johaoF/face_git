@@ -20,10 +20,9 @@ def conectar_base_datos():
         # Obtener las credenciales de las variables de entorno
         username = os.environ.get('MONGODB_USERNAME')
         password = os.environ.get('MONGODB_PASSWORD')
-        database_name = os.environ.get('MONGODB_DATABASE_NAME')
 
         # Construir la URI de conexión
-        uri = f"mongodb+srv://{username}:{password}@cluster0.xuxjccf.mongodb.net/{database_name}?retryWrites=true&w=majority"
+        uri = f"mongodb+srv://{username}:{password}@cluster0.xuxjccf.mongodb.net/?retryWrites=true&w=majority"
 
         # Conectarse a la base de datos
         client = MongoClient(uri)
