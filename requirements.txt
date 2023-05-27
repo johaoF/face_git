@@ -3,3 +3,5 @@ Flask
 Gunicorn
 requests
 google-cloud-dialogflow
+spacy
+spacy download es_core_news_sm
