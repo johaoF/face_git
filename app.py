@@ -1,11 +1,9 @@
 import os
-import sys
 import json
-from datetime import datetime
-from google.cloud import dialogflow_v2 as dialogflow
-from pymongo import MongoClient
 import requests
 from flask import Flask, request
+from google.cloud import dialogflow_v2 as dialogflow
+from pymongo import MongoClient
 import spacy
 from spacy.matcher import Matcher
 
@@ -107,9 +105,20 @@ def webhook():
                     nombre, fecha, hora = extraer_info_oracion(message_text)
 
                     # Guardar la reserva si se encontraron los valores
-                    if collection is not None and nombre and fecha and hora:
-                        guardar_reserva(collection, nombre, fecha, hora)
-                        response_text += "\nLa reserva se ha guardado exitosamente."
+                    if collection is not None:
+                        if "cantidad de personas" in message_text.lower():
+                            guardar_datos(sender_id, "cantidad_personas", message_text)
+                        elif "nombre" in message_text.lower():
+                            guardar_datos(sender_id, "nombre", message_text)
+                        elif "hora" in message_text.lower():
+                            guardar_datos(sender_id, "hora", message_text)
+                        elif "fecha" in message_text.lower():
+                            guardar_datos(sender_id, "fecha", message_text)
+                        else:
+                            guardar_datos(sender_id, "otros", message_text)
+                        if nombre and fecha and hora:
+                            guardar_reserva(collection, nombre, fecha, hora)
+                            response_text += "\nLa reserva se ha guardado exitosamente."
 
                 if sender_id is not None:
                     send_message(sender_id, response_text)
@@ -173,3 +182,7 @@ def extraer_info_oracion(oracion):
             hora = doc[start:end].text
 
     return nombre, fecha, hora
+
+def guardar_datos(user_id, key, value):
+    # Guardar los datos en la base de datos o en algún otro lugar
+    print(f"Guardando datos: User ID: {user_id}, Key: {key}, Value: {value}")
