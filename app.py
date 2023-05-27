@@ -6,6 +6,7 @@ from google.cloud import dialogflow_v2 as dialogflow
 from pymongo import MongoClient
 import requests
 from flask import Flask, request
+import spacy
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/etc/secrets/clave.json"
 project_id = 'barrestaurante-eltri-ngul-xpxa'
