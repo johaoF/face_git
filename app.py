@@ -4,8 +4,6 @@ import requests
 from flask import Flask, request
 from google.cloud import dialogflow_v2 as dialogflow
 from pymongo import MongoClient
-import spacy
-from spacy.matcher import Matcher
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/etc/secrets/clave.json"
 project_id = 'barrestaurante-eltri-ngul-xpxa'
@@ -36,9 +34,10 @@ def conectar_base_datos():
         return None
 
 # Guardar reserva en MongoDB
-def guardar_reserva(collection, nombre, fecha, hora):
+def guardar_reserva(collection, nombre, cantidad_personas, fecha, hora):
     reserva = {
         "nombre": nombre,
+        "cantidad_personas": cantidad_personas,
         "fecha": fecha,
         "hora": hora
     }
@@ -101,9 +100,6 @@ def webhook():
                             seen_paragraphs.add(paragraph)
                     response_text = "\n".join(text_response)
 
-                    # Extraer información de la oración
-                    nombre, fecha, hora = extraer_info_oracion(message_text)
-
                     # Guardar la reserva si se encontraron los valores
                     if collection is not None:
                         if "cantidad de personas" in message_text.lower():
@@ -116,9 +112,17 @@ def webhook():
                             guardar_datos(sender_id, "fecha", message_text)
                         else:
                             guardar_datos(sender_id, "otros", message_text)
-                        if nombre and fecha and hora:
-                            guardar_reserva(collection, nombre, fecha, hora)
-                            response_text += "\nLa reserva se ha guardado exitosamente."
+                        nombre = obtener_datos(sender_id, "nombre")
+                        cantidad_personas = obtener_datos(sender_id, "cantidad_personas")
+                        fecha = obtener_datos(sender_id, "fecha")
+                        hora = obtener_datos(sender_id, "hora")
+                        if nombre and cantidad_personas and fecha and hora:
+                            reserva_existente = verificar_reserva_existente(collection, fecha, hora)
+                            if reserva_existente:
+                                response_text += "\nLa hora ya está reservada. Por favor, elige otra hora."
+                            else:
+                                guardar_reserva(collection, nombre, cantidad_personas, fecha, hora)
+                                response_text += "\nLa reserva se ha guardado exitosamente."
 
                 if sender_id is not None:
                     send_message(sender_id, response_text)
@@ -153,36 +157,15 @@ def send_message(recipient_id, message_text):
     if response.status_code != 200:
         print('Error al enviar el mensaje: ' + response.text)
 
-def extraer_info_oracion(oracion):
-    nlp = spacy.load("es_core_news_sm")
-    matcher = Matcher(nlp.vocab)
-
-    # Definir patrones para extraer el nombre, la fecha y la hora
-    nombre_patron = [{"POS": "PROPN"}, {"POS": "PROPN"}]
-    fecha_patron = [{"IS_DIGIT": True}, {"LOWER": "de"}, {"IS_DIGIT": True}, {"LOWER": "de"}, {"IS_DIGIT": True}]
-    hora_patron = [{"IS_DIGIT": True}, {"LOWER": "horas"}]
-
-    matcher.add("NOMBRE", [nombre_patron])
-    matcher.add("FECHA", [fecha_patron])
-    matcher.add("HORA", [hora_patron])
-
-    doc = nlp(oracion)
-    matches = matcher(doc)
-
-    nombre = None
-    fecha = None
-    hora = None
-
-    for match_id, start, end in matches:
-        if nlp.vocab.strings[match_id] == "NOMBRE":
-            nombre = doc[start:end].text
-        elif nlp.vocab.strings[match_id] == "FECHA":
-            fecha = doc[start:end].text
-        elif nlp.vocab.strings[match_id] == "HORA":
-            hora = doc[start:end].text
-
-    return nombre, fecha, hora
-
 def guardar_datos(user_id, key, value):
     # Guardar los datos en la base de datos o en algún otro lugar
     print(f"Guardando datos: User ID: {user_id}, Key: {key}, Value: {value}")
+
+def obtener_datos(user_id, key):
+    # Obtener los datos de la base de datos o de algún otro lugar
+    return None  # Reemplazar con la lógica de obtención de datos
+
+def verificar_reserva_existente(collection, fecha, hora):
+    # Verificar si existe una reserva para la fecha y hora especificadas
+    return False  # Reemplazar con la lógica de verificación de reserva
+
