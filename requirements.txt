@@ -3,4 +3,4 @@ Flask==2.0.2
 Gunicorn==20.1.0
 requests==2.26.0
 google-cloud-dialogflow
-pymongo==4.0.1
+pymongo[srv]
