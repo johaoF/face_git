@@ -102,16 +102,16 @@ def webhook():
 
                     # Guardar la reserva si se encontraron los valores
                     if collection is not None:
-                        if "cantidad de personas" in message_text.lower():
-                            guardar_datos(sender_id, "cantidad_personas", message_text)
-                        elif "nombre" in message_text.lower():
-                            guardar_datos(sender_id, "nombre", message_text)
-                        elif "hora" in message_text.lower():
-                            guardar_datos(sender_id, "hora", message_text)
-                        elif "fecha" in message_text.lower():
-                            guardar_datos(sender_id, "fecha", message_text)
+                        if "cantidad de personas" in response_text.lower():
+                            guardar_datos(sender_id, "cantidad_personas", response_text)
+                        elif "nombre" in response_text.lower():
+                            guardar_datos(sender_id, "nombre", response_text)
+                        elif "hora" in response_text.lower():
+                            guardar_datos(sender_id, "hora", response_text)
+                        elif "fecha" in response_text.lower():
+                            guardar_datos(sender_id, "fecha", response_text)
                         else:
-                            guardar_datos(sender_id, "otros", message_text)
+                            guardar_datos(sender_id, "otros", response_text)
                         nombre = obtener_datos(sender_id, "nombre")
                         cantidad_personas = obtener_datos(sender_id, "cantidad_personas")
                         fecha = obtener_datos(sender_id, "fecha")
