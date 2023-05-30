@@ -156,16 +156,61 @@ def send_message(recipient_id, message_text):
     response = requests.post('https://graph.facebook.com/v16.0/me/messages', params=params, headers=headers, data=json.dumps(data))
     if response.status_code != 200:
         print('Error al enviar el mensaje: ' + response.text)
-
 def guardar_datos(user_id, key, value):
     # Guardar los datos en la base de datos o en algún otro lugar
-    print(f"Guardando datos: User ID: {user_id}, Key: {key}, Value: {value}")
+    try:
+        # Conectar a la base de datos
+        collection = conectar_base_datos()
+        
+        if collection is not None:
+            # Buscar el documento del usuario en la colección
+            query = {"user_id": user_id}
+            user_data = collection.find_one(query)
+
+            if user_data:
+                # Actualizar el valor existente
+                update_query = {"$set": {key: value}}
+                collection.update_one(query, update_query)
+            else:
+                # Insertar un nuevo documento para el usuario
+                user_data = {"user_id": user_id, key: value}
+                collection.insert_one(user_data)
+
+            print(f"Datos guardados: User ID: {user_id}, Key: {key}, Value: {value}")
+        else:
+            print("Error al conectar a la base de datos")
+    except Exception as e:
+        print(f"Error al guardar los datos: {e}")
+
 
 def obtener_datos(user_id, key):
     # Obtener los datos de la base de datos o de algún otro lugar
-    return None  # Reemplazar con la lógica de obtención de datos
+    try:
+        # Conectar a la base de datos
+        collection = conectar_base_datos()
+
+        if collection is not None:
+            # Buscar el documento del usuario en la colección
+            query = {"user_id": user_id}
+            user_data = collection.find_one(query)
+
+            if user_data and key in user_data:
+                return user_data[key]
+
+        return None
+    except Exception as e:
+        print(f"Error al obtener los datos: {e}")
+        return None
+
 
 def verificar_reserva_existente(collection, fecha, hora):
     # Verificar si existe una reserva para la fecha y hora especificadas
-    return False  # Reemplazar con la lógica de verificación de reserva
+    try:
+        query = {"fecha": fecha, "hora": hora}
+        result = collection.find_one(query)
+        return result is not None
+    except Exception as e:
+        print(f"Error al verificar la reserva existente: {e}")
+        return False
+
 
