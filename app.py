@@ -102,13 +102,13 @@ def webhook():
                     # Guardar la reserva si se encontraron los valores
                     if collection is not None:
                         if "cantidad de personas" in response_text.lower():
-                            guardar_datos_asincrono(sender_id, "cantidad_personas", response_text, collection)
+                            guardar_datos(sender_id, "cantidad_personas", response_text, collection)
                         elif "nombre" in response_text.lower():
-                            guardar_datos_asincrono(sender_id, "nombre", response_text, collection)
+                            guardar_datos(sender_id, "nombre", response_text, collection)
                         elif "hora" in response_text.lower():
-                            guardar_datos_asincrono(sender_id, "hora", response_text, collection)
+                            guardar_datos(sender_id, "hora", response_text, collection)
                         elif "fecha" in response_text.lower():
-                            guardar_datos_asincrono(sender_id, "fecha", response_text, collection)
+                            guardar_datos(sender_id, "fecha", response_text, collection)
                         else:
                             print("Datos innecesarios")
                         nombre = obtener_datos(sender_id, "nombre")
@@ -156,6 +156,26 @@ def send_message(recipient_id, message_text):
     if response.status_code != 200:
         print('Error al enviar el mensaje: ' + response.text)
 
+def guardar_datos(sender_id, key, value, collection):
+    try:
+        # Buscar el documento de reserva correspondiente al sender_id
+        reserva = collection.find_one({"sender_id": sender_id})
+
+        if reserva is None:
+            # Si no existe un documento de reserva, crear uno nuevo
+            reserva = {"sender_id": sender_id}
+
+        # Actualizar el campo correspondiente con el valor recibido
+        reserva[key] = value
+
+        # Guardar los cambios en la base de datos
+        collection.save(reserva)
+
+        print(f"Dato {key} guardado exitosamente para el sender_id {sender_id}")
+    except Exception as e:
+        print(f"Error al guardar el dato {key} para el sender_id {sender_id}: {e}")
+
+        
 def obtener_datos(user_id, key):
     # Obtener los datos de la base de datos o de algún otro lugar
     return None
