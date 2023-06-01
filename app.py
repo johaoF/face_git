@@ -27,7 +27,7 @@ def conectar_base_datos():
         # Conectarse a la base de datos
         client = MongoClient(uri)
         db = client[database_name]
-        collection = db.reservas
+        collection = db.reservas # Nombre de la colección donde se guardarán las reservas
 
         return collection
     except Exception as e:
