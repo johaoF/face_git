@@ -4,6 +4,7 @@ import requests
 from flask import Flask, request
 from google.cloud import dialogflow_v2 as dialogflow
 from pymongo import MongoClient
+import threading
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/etc/secrets/clave.json"
 project_id = 'barrestaurante-eltri-ngul-xpxa'
@@ -53,6 +54,26 @@ def guardar_reserva(collection, nombre, cantidad_personas, fecha, hora):
 # Inicializar Flask
 app = Flask(__name__)
 
+def guardar_datos(user_id, key, value, collection):
+    try:
+        query = {"user_id": user_id}
+        user_data = collection.find_one(query)
+
+        if user_data:
+            update_query = {"$set": {key: value}}
+            collection.update_one(query, update_query)
+        else:
+            user_data = {"user_id": user_id, key: value}
+            collection.insert_one(user_data)
+
+        print(f"Datos guardados: User ID: {user_id}, Key: {key}, Value: {value}")
+    except Exception as e:
+        print(f"Error al guardar los datos: {e}")
+
+def guardar_datos_asincrono(user_id, key, value, collection):
+    t = threading.Thread(target=guardar_datos, args=(user_id, key, value, collection))
+    t.start()
+
 @app.route('/', methods=['GET'])
 def verify():
     # when the endpoint is registered as a webhook, it must echo back
@@ -66,23 +87,18 @@ def verify():
 
 @app.route('/', methods=['POST'])
 def webhook():
-
-    # endpoint for processing incoming messaging events
-
     data = request.get_json()
     if data["object"] == "page":
-
         # Conectar a la base de datos
         collection = conectar_base_datos()
 
         for entry in data["entry"]:
             for messaging_event in entry["messaging"]:
                 sender_id = None
-                if messaging_event.get("message"):  # someone sent us a message
-
-                    sender_id = messaging_event["sender"]["id"]        # the facebook ID of the person sending you the message
-                    recipient_id = messaging_event["recipient"]["id"]  # the recipient's ID, which should be your page's facebook ID
-                    message_text = messaging_event["message"]["text"]  # the message's text
+                if messaging_event.get("message"):
+                    sender_id = messaging_event["sender"]["id"]
+                    recipient_id = messaging_event["recipient"]["id"]
+                    message_text = messaging_event["message"]["text"]
                     tx = message_text
                     text_input = dialogflow.TextInput(text=tx, language_code="es-ES")
                     query_input = dialogflow.QueryInput(text=text_input)
@@ -103,15 +119,15 @@ def webhook():
                     # Guardar la reserva si se encontraron los valores
                     if collection is not None:
                         if "cantidad de personas" in response_text.lower():
-                            guardar_datos(sender_id, "cantidad_personas", response_text)
+                            guardar_datos_asincrono(sender_id, "cantidad_personas", response_text, collection)
                         elif "nombre" in response_text.lower():
-                            guardar_datos(sender_id, "nombre", response_text)
+                            guardar_datos_asincrono(sender_id, "nombre", response_text, collection)
                         elif "hora" in response_text.lower():
-                            guardar_datos(sender_id, "hora", response_text)
+                            guardar_datos_asincrono(sender_id, "hora", response_text, collection)
                         elif "fecha" in response_text.lower():
-                            guardar_datos(sender_id, "fecha", response_text)
+                            guardar_datos_asincrono(sender_id, "fecha", response_text, collection)
                         else:
-                            print("Datos inecesarios")
+                            print("Datos innecesarios")
                         nombre = obtener_datos(sender_id, "nombre")
                         cantidad_personas = obtener_datos(sender_id, "cantidad_personas")
                         fecha = obtener_datos(sender_id, "fecha")
@@ -127,13 +143,13 @@ def webhook():
                 if sender_id is not None:
                     send_message(sender_id, response_text)
 
-                if messaging_event.get("delivery"):  # delivery confirmation
+                if messaging_event.get("delivery"):
                     pass
 
-                if messaging_event.get("optin"):  # optin confirmation
+                if messaging_event.get("optin"):
                     pass
 
-                if messaging_event.get("postback"):  # user clicked/tapped "postback" button in earlier message
+                if messaging_event.get("postback"):
                     pass
 
     return "ok", 200
@@ -157,39 +173,10 @@ def send_message(recipient_id, message_text):
     if response.status_code != 200:
         print('Error al enviar el mensaje: ' + response.text)
 
-def guardar_datos(user_id, key, value):
-    # Guardar los datos en la base de datos o en algún otro lugar
-    try:
-        # Conectar a la base de datos
-        collection = conectar_base_datos()
-        
-        if collection is not None:
-            # Buscar el documento del usuario en la colección
-            query = {"user_id": user_id}
-            user_data = collection.find_one(query)
-
-            if user_data:
-                # Actualizar el valor existente
-                update_query = {"$set": {key: value}}
-                collection.update_one(query, update_query)
-            else:
-                # Insertar un nuevo documento para el usuario
-                user_data = {"user_id": user_id, key: value}
-                collection.insert_one(user_data)
-
-            print(f"Datos guardados: User ID: {user_id}, Key: {key}, Value: {value}")
-        else:
-            print("Error al conectar a la base de datos")
-    except Exception as e:
-        print(f"Error al guardar los datos: {e}")
-
 def obtener_datos(user_id, key):
     # Obtener los datos de la base de datos o de algún otro lugar
-        return None
-
+    return None
 
 def verificar_reserva_existente(collection, fecha, hora):
     # Verificar si existe una reserva para la fecha y hora especificadas
-        return None
-
-
+    return None
