@@ -111,7 +111,7 @@ def webhook():
                         elif "fecha" in response_text.lower():
                             guardar_datos(sender_id, "fecha", response_text)
                         else:
-                            guardar_datos(sender_id, "otros", response_text)
+                            print("Datos inecesarios")
                         nombre = obtener_datos(sender_id, "nombre")
                         cantidad_personas = obtener_datos(sender_id, "cantidad_personas")
                         fecha = obtener_datos(sender_id, "fecha")
