@@ -98,7 +98,11 @@ def webhook():
                 if messaging_event.get("message"):
                     sender_id = messaging_event["sender"]["id"]
                     recipient_id = messaging_event["recipient"]["id"]
-                    message_text = messaging_event["message"]["text"]
+                    if messaging_event["message"].get("text"):
+                        message_text = messaging_event["message"]["text"]
+                    else:
+                        # Si no se encuentra el campo de texto, pasar al siguiente mensaje
+                        continue
                     tx = message_text
                     text_input = dialogflow.TextInput(text=tx, language_code="es-ES")
                     query_input = dialogflow.QueryInput(text=text_input)
