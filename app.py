@@ -158,59 +158,16 @@ def send_message(recipient_id, message_text):
         print('Error al enviar el mensaje: ' + response.text)
 def guardar_datos(user_id, key, value):
     # Guardar los datos en la base de datos o en algún otro lugar
-    try:
-        # Conectar a la base de datos
-        collection = conectar_base_datos()
-        
-        if collection is not None:
-            # Buscar el documento del usuario en la colección
-            query = {"user_id": user_id}
-            user_data = collection.find_one(query)
-
-            if user_data:
-                # Actualizar el valor existente
-                update_query = {"$set": {key: value}}
-                collection.update_one(query, update_query)
-            else:
-                # Insertar un nuevo documento para el usuario
-                user_data = {"user_id": user_id, key: value}
-                collection.insert_one(user_data)
-
-            print(f"Datos guardados: User ID: {user_id}, Key: {key}, Value: {value}")
-        else:
-            print("Error al conectar a la base de datos")
-    except Exception as e:
-        print(f"Error al guardar los datos: {e}")
+    return None
 
 
 def obtener_datos(user_id, key):
     # Obtener los datos de la base de datos o de algún otro lugar
-    try:
-        # Conectar a la base de datos
-        collection = conectar_base_datos()
-
-        if collection is not None:
-            # Buscar el documento del usuario en la colección
-            query = {"user_id": user_id}
-            user_data = collection.find_one(query)
-
-            if user_data and key in user_data:
-                return user_data[key]
-
-        return None
-    except Exception as e:
-        print(f"Error al obtener los datos: {e}")
         return None
 
 
 def verificar_reserva_existente(collection, fecha, hora):
     # Verificar si existe una reserva para la fecha y hora especificadas
-    try:
-        query = {"fecha": fecha, "hora": hora}
-        result = collection.find_one(query)
-        return result is not None
-    except Exception as e:
-        print(f"Error al verificar la reserva existente: {e}")
-        return False
+        return None
 
 
