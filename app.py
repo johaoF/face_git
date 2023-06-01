@@ -4,7 +4,6 @@ import requests
 from flask import Flask, request
 from google.cloud import dialogflow_v2 as dialogflow
 from pymongo import MongoClient
-import threading
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/etc/secrets/clave.json"
 project_id = 'barrestaurante-eltri-ngul-xpxa'
@@ -53,26 +52,6 @@ def guardar_reserva(collection, nombre, cantidad_personas, fecha, hora):
 
 # Inicializar Flask
 app = Flask(__name__)
-
-def guardar_datos(user_id, key, value, collection):
-    try:
-        query = {"user_id": user_id}
-        user_data = collection.find_one(query)
-
-        if user_data:
-            update_query = {"$set": {key: value}}
-            collection.update_one(query, update_query)
-        else:
-            user_data = {"user_id": user_id, key: value}
-            collection.insert_one(user_data)
-
-        print(f"Datos guardados: User ID: {user_id}, Key: {key}, Value: {value}")
-    except Exception as e:
-        print(f"Error al guardar los datos: {e}")
-
-def guardar_datos_asincrono(user_id, key, value, collection):
-    t = threading.Thread(target=guardar_datos, args=(user_id, key, value, collection))
-    t.start()
 
 @app.route('/', methods=['GET'])
 def verify():
