@@ -33,22 +33,6 @@ def conectar_base_datos():
         print(f"Error al conectar a la base de datos: {e}")
         return None
 
-# Guardar reserva en MongoDB
-def guardar_reserva(collection, nombre, cantidad_personas, fecha, hora):
-    reserva = {
-        "nombre": nombre,
-        "cantidad_personas": cantidad_personas,
-        "fecha": fecha,
-        "hora": hora
-    }
-
-    try:
-        collection.insert_one(reserva)
-        print("La reserva se ha guardado exitosamente.")
-    except Exception as e:
-        print(f"Error al guardar la reserva: {e}")
-        return None
-
 # Inicializar Flask
 app = Flask(__name__)
 
@@ -97,20 +81,6 @@ def webhook():
                                 text_response.append(paragraph)
                             seen_paragraphs.add(paragraph)
                     response_text = "\n".join(text_response)
-
-                    # Guardar la reserva si se encontraron los valores
-                    if collection is not None:
-                        if "cantidad de personas" in response_text.lower():
-                            cantidad_personas=tx
-                        elif "nombre" in response_text.lower():
-                            nombre=tx
-                        elif "hora" in response_text.lower():
-                            hora=tx
-                        elif "fecha" in response_text.lower():
-                            fecha=tx
-                        else:
-                            print("Datos innecesarios")
-                        guardar_reserva(collection, nombre, cantidad_personas, fecha, hora)
                                
                 if sender_id is not None:
                     send_message(sender_id, response_text)
@@ -145,31 +115,3 @@ def send_message(recipient_id, message_text):
     response = requests.post('https://graph.facebook.com/v16.0/me/messages', params=params, headers=headers, data=json.dumps(data))
     if response.status_code != 200:
         print('Error al enviar el mensaje: ' + response.text)
-
-def guardar_datos(sender_id, key, value, collection):
-    try:
-        # Buscar el documento de reserva correspondiente al sender_id
-        reserva = collection.find_one({"sender_id": sender_id})
-
-        if reserva is None:
-            # Si no existe un documento de reserva, crear uno nuevo
-            reserva = {"sender_id": sender_id}
-
-        # Actualizar el campo correspondiente con el valor recibido
-        reserva[key] = value
-
-        # Guardar los cambios en la base de datos
-        collection.save(reserva)
-
-        print(f"Dato {key} guardado exitosamente para el sender_id {sender_id}")
-    except Exception as e:
-        print(f"Error al guardar el dato {key} para el sender_id {sender_id}: {e}")
-
-        
-def obtener_datos(user_id, key):
-    # Obtener los datos de la base de datos o de algún otro lugar
-    return None
-
-def verificar_reserva_existente(collection, fecha, hora):
-    # Verificar si existe una reserva para la fecha y hora especificadas
-    return None
