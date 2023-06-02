@@ -84,14 +84,27 @@ def webhook():
                     
                     if response.query_result.intent.display_name == 'Reservaciones':
                         fecha_reservacion = response.query_result.parameters['fecha']
-                        print(fecha_reservacion)
-                        # Guardar la fecha de reservación en la base de datos
-                       # if collection is not None:
-                       #     documento = {'sender_id': sender_id, 'fecha_reservacion': fecha_reservacion}
-                       #     collection.insert_one(documento)
-                       #    print('Fecha de reservación guardada en la base de datos')
-                       # else:
-                       #    print('Error al conectar a la base de datos')
+                        hora_reservacion = response.query_result.parameters['hora']
+                        cantidad_personas = response.query_result.parameters['cantidad_personas']
+                        nombre = response.query_result.parameters['nombre']
+                            # Guardar la información en la base de datos
+                        documento = {
+                          'fecha_reservacion': fecha_reservacion,
+                          'hora_reservacion': hora_reservacion,
+                          'cantidad_personas': cantidad_personas,
+                          'nombre': nombre,
+                          'apellido': apellido
+                        }
+   
+                        collection.insert_one(documento)
+    
+                         # Imprimir la información
+                        print("Fecha de reservación:", fecha_reservacion)
+                        print("Hora de reservación:", hora_reservacion)
+                        print("Cantidad de personas:", cantidad_personas)
+                        print("Nombre:", nombre)
+                        print("Apellido:", apellido)
+
 
                     # Enviar la respuesta al usuario a través de Facebook Messenger
                     if sender_id is not None:
