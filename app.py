@@ -101,25 +101,16 @@ def webhook():
                     # Guardar la reserva si se encontraron los valores
                     if collection is not None:
                         if "cantidad de personas" in response_text.lower():
-                            guardar_datos(sender_id, "cantidad_personas", response_text, collection)
+                            cantidad_personas=tx
                         elif "nombre" in response_text.lower():
-                            guardar_datos(sender_id, "nombre", response_text, collection)
+                            nombre=tx
                         elif "hora" in response_text.lower():
-                            guardar_datos(sender_id, "hora", response_text, collection)
+                            hora=tx
                         elif "fecha" in response_text.lower():
-                            guardar_datos(sender_id, "fecha", response_text, collection)
+                            fecha=tx
                         else:
                             print("Datos innecesarios")
-                        nombre = obtener_datos(sender_id, "nombre")
-                        cantidad_personas = obtener_datos(sender_id, "cantidad_personas")
-                        fecha = obtener_datos(sender_id, "fecha")
-                        hora = obtener_datos(sender_id, "hora")
-                        if nombre and cantidad_personas and fecha and hora:
-                            reserva_existente = verificar_reserva_existente(collection, fecha, hora)
-                            if reserva_existente:
-                                response_text += "\nLa hora ya está reservada. Por favor, elige otra hora."
-                            else:
-                                guardar_reserva(collection, nombre, cantidad_personas, fecha, hora)
+                        guardar_reserva(collection, nombre, cantidad_personas, fecha, hora)
                                 response_text += "\nLa reserva se ha guardado exitosamente."
 
                 if sender_id is not None:
