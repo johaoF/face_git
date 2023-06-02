@@ -111,8 +111,7 @@ def webhook():
                         else:
                             print("Datos innecesarios")
                         guardar_reserva(collection, nombre, cantidad_personas, fecha, hora)
-                                response_text += "\nLa reserva se ha guardado exitosamente."
-
+                               
                 if sender_id is not None:
                     send_message(sender_id, response_text)
 
