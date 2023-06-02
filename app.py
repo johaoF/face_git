@@ -83,14 +83,15 @@ def webhook():
                     response_text = "\n".join(text_response)
                     
                     if response.query_result.intent.display_name == 'Reservaciones':
-                        fecha_reservacion = response.query_result.parameters['fecha']
+                        fecha_reservacion = response.query_result.parameters['fecha'].string_value
+                        print(fecha_reservacion)
                         # Guardar la fecha de reservación en la base de datos
-                        if collection is not None:
-                            documento = {'sender_id': sender_id, 'fecha_reservacion': fecha_reservacion}
-                            collection.insert_one(documento)
-                            print('Fecha de reservación guardada en la base de datos')
-                        else:
-                            print('Error al conectar a la base de datos')
+                       # if collection is not None:
+                       #     documento = {'sender_id': sender_id, 'fecha_reservacion': fecha_reservacion}
+                       #     collection.insert_one(documento)
+                       #    print('Fecha de reservación guardada en la base de datos')
+                       # else:
+                       #    print('Error al conectar a la base de datos')
 
                     # Enviar la respuesta al usuario a través de Facebook Messenger
                     if sender_id is not None:
