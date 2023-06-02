@@ -43,9 +43,8 @@ def guardar_reserva(collection, nombre, cantidad_personas, fecha, hora):
     }
 
     try:
-        result = collection.insert_one(reserva)
+        collection.insert_one(reserva)
         print("La reserva se ha guardado exitosamente.")
-        return result.inserted_id
     except Exception as e:
         print(f"Error al guardar la reserva: {e}")
         return None
