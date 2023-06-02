@@ -83,7 +83,7 @@ def webhook():
                     response_text = "\n".join(text_response)
                     
                     if response.query_result.intent.display_name == 'Reservaciones':
-                        fecha_reservacion = response.query_result.parameters['fecha'].string_value
+                        fecha_reservacion = response.query_result.parameters['fecha']
                         print(fecha_reservacion)
                         # Guardar la fecha de reservación en la base de datos
                        # if collection is not None:
