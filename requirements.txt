@@ -1,6 +1,6 @@
 pip==23.0.1
-Flask==2.0.2
-Gunicorn==20.1.0
-requests==2.26.0
+Flask
+Gunicorn
+requests
 google-cloud-dialogflow
 pymongo[srv]
