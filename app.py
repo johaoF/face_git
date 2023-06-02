@@ -85,7 +85,7 @@ def webhook():
                     if response.query_result.intent.display_name == 'Reservaciones':
                         fecha_reservacion = response.query_result.parameters['fecha']
                         hora_reservacion = response.query_result.parameters['hora']
-                        cantidad_personas = response.query_result.parameters['cantidad_personas']
+                        cantidad_personas = response.query_result.parameters['nroclientes']
                         nombre = response.query_result.parameters['nombre']
                             # Guardar la información en la base de datos
                         documento = {
@@ -93,7 +93,6 @@ def webhook():
                           'hora_reservacion': hora_reservacion,
                           'cantidad_personas': cantidad_personas,
                           'nombre': nombre,
-                          'apellido': apellido
                         }
    
                         collection.insert_one(documento)
@@ -103,7 +102,6 @@ def webhook():
                         print("Hora de reservación:", hora_reservacion)
                         print("Cantidad de personas:", cantidad_personas)
                         print("Nombre:", nombre)
-                        print("Apellido:", apellido)
 
 
                     # Enviar la respuesta al usuario a través de Facebook Messenger
