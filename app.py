@@ -85,7 +85,7 @@ def webhook():
                     if response.query_result.intent.display_name == 'Reservaciones':
                         fecha_reservacion = response.query_result.parameters['fecha']
                         # Guardar la fecha de reservación en la base de datos
-                        if collection:
+                        if collection is not None:
                             documento = {'sender_id': sender_id, 'fecha_reservacion': fecha_reservacion}
                             collection.insert_one(documento)
                             print('Fecha de reservación guardada en la base de datos')
