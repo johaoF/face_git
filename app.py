@@ -126,6 +126,7 @@ def webhook():
 
     return "ok", 200
 
+
 def send_message(recipient_id, message_text):
     params = {
          "access_token": os.environ["FB_PAGE_ACCESS_TOKEN"]
