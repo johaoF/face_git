@@ -95,7 +95,7 @@ def webhook():
                           'nombre': nombre,
                         }
    
-                        collection.insert_one(documento)
+                        #collection.insert_one(documento)
     
                          # Imprimir la información
                         print("Fecha de reservación:", fecha_reservacion)
